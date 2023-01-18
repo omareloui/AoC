@@ -1,7 +1,7 @@
 use aoc::*;
 
-const DAY_NUMBER: DayNumber = 1;
-const TEST_RESULTS: (Res, Res) = (24000, 45000);
+const DAY_NUMBER: DayNumber = 0;
+const TEST_RESULTS: (Res, Res) = (0, 0);
 
 fn challenge_1(input: &String) -> Res {
 	unimplemented!()
