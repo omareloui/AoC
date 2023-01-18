@@ -98,6 +98,7 @@ fn main() {
 		TEST_RESULTS,
 		Box::new(challenge_1),
 		Box::new(challenge_2),
+		false,
 	);
 	day.check();
 }

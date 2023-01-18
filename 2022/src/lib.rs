@@ -52,13 +52,19 @@ impl Part<'static> {
 		num: &'a PartNumber,
 		test_result: Res,
 		function: PartFunction,
+		take_input_num: Option<&PartNumber>,
 	) -> Part<'a> {
+		let input_num: &PartNumber = match take_input_num {
+			Some(value) => value,
+			None => num,
+		};
+
 		Part {
 			test_result,
 			num,
-			test_input: get_input_content(day, &Mode::Test, num)
+			test_input: get_input_content(day, &Mode::Test, input_num)
 				.expect("Can't find the input test file"),
-			prod_input: get_input_content(day, &Mode::Prod, &num)
+			prod_input: get_input_content(day, &Mode::Prod, input_num)
 				.expect("Can't find the input prod file"),
 			function,
 		}
@@ -101,10 +107,21 @@ impl Day<'static> {
 		results: (Res, Res),
 		function_1: PartFunction,
 		function_2: PartFunction,
+		same_input: bool,
 	) -> Day<'a> {
 		Day {
-			part_1: Part::new(day, &PartNumber::One, results.0, function_1),
-			part_2: Part::new(day, &PartNumber::Two, results.1, function_2),
+			part_1: Part::new(day, &PartNumber::One, results.0, function_1, None),
+			part_2: Part::new(
+				day,
+				&PartNumber::Two,
+				results.1,
+				function_2,
+				if same_input {
+					Some(&PartNumber::One)
+				} else {
+					None
+				},
+			),
 		}
 	}
 
