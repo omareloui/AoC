@@ -1,5 +1,7 @@
 use aoc::*;
 
+type Res = u32;
+
 const DAY_NUMBER: DayNumber = 1;
 const TEST_RESULTS: (Res, Res) = (24000, 45000);
 

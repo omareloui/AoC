@@ -1,7 +1,6 @@
-use std::{fs, io::Error, ops::Deref};
+use std::{cmp::PartialEq, fs, io::Error, ops::Deref};
 
 pub type DayNumber = u8;
-pub type Res = u32;
 
 pub enum PartNumber {
 	One,
@@ -36,24 +35,27 @@ pub fn get_input_content(
 	fs::read_to_string(build_path(day, mode, challenge_number))
 }
 
-type PartFunction = Box<dyn Fn(&String) -> Res>;
+type PartFunction<T> = Box<dyn Fn(&String) -> T>;
 
-struct Part<'a> {
-	test_result: Res,
+struct Part<'a, T> {
+	test_result: T,
 	num: &'a PartNumber,
 	prod_input: String,
 	test_input: String,
-	function: PartFunction,
+	function: PartFunction<T>,
 }
 
-impl Part<'static> {
+impl<T> Part<'static, T>
+where
+	T: PartialEq + std::fmt::Debug,
+{
 	pub fn new<'a>(
 		day: DayNumber,
 		num: &'a PartNumber,
-		test_result: Res,
-		function: PartFunction,
+		test_result: T,
+		function: PartFunction<T>,
 		take_input_num: Option<&PartNumber>,
-	) -> Part<'a> {
+	) -> Part<'a, T> {
 		let input_num: &PartNumber = match take_input_num {
 			Some(value) => value,
 			None => num,
@@ -70,10 +72,8 @@ impl Part<'static> {
 		}
 	}
 
-	// TODO: find a way to get this &u32 from the ResultType
-	pub fn run(&self, mode: &Mode) -> Res {
+	pub fn run(&self, mode: &Mode) -> T {
 		return match mode {
-			// TODO: find a prettier way to write this deref
 			Mode::Test => self.function.deref()(&self.test_input),
 			Mode::Prod => self.function.deref()(&self.prod_input),
 		};
@@ -96,19 +96,22 @@ impl Part<'static> {
 	}
 }
 
-pub struct Day<'a> {
-	part_1: Part<'a>,
-	part_2: Part<'a>,
+pub struct Day<'a, T> {
+	part_1: Part<'a, T>,
+	part_2: Part<'a, T>,
 }
 
-impl Day<'static> {
+impl<T> Day<'static, T>
+where
+	T: PartialEq + std::fmt::Debug,
+{
 	pub fn new<'a>(
 		day: DayNumber,
-		results: (Res, Res),
-		function_1: PartFunction,
-		function_2: PartFunction,
+		results: (T, T),
+		function_1: PartFunction<T>,
+		function_2: PartFunction<T>,
 		same_input: bool,
-	) -> Day<'a> {
+	) -> Day<'a, T> {
 		Day {
 			part_1: Part::new(day, &PartNumber::One, results.0, function_1, None),
 			part_2: Part::new(
